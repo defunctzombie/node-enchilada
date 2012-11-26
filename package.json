@@ -1,0 +1,24 @@
+{
+  "name": "enchilada",
+  "version": "0.0.0",
+  "description": "express/connect middleware for javascript bundles",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/shtylman/node-enchilada.git"
+  },
+  "keywords": [
+    "express",
+    "script",
+    "bundle"
+  ],
+  "author": "Roman Shtylman <shtylman@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "mime": "1.2.7",
+    "script": "0.1.0-pre3"
+  }
+}
