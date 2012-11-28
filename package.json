@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "mime": "1.2.7",
-    "script": "0.1.0-pre4"
+    "script": "0.1.0-pre4",
+    "uglify-js": "2.2.1"
   }
 }

@@ -4,6 +4,7 @@ var path = require('path');
 // vendor
 var mime = require('mime');
 var script = require('script');
+var uglifyjs = require('uglify-js');
 
 module.exports = function enchilada(opt) {
 
@@ -16,6 +17,7 @@ module.exports = function enchilada(opt) {
     var routes = opt.routes || {};
     var bundles = {};
 
+    var compress = false || opt.compress;
     var cache;
 
     // if user wants in memory cache, enable it
@@ -70,6 +72,14 @@ module.exports = function enchilada(opt) {
         bundle.generate(function(err, src) {
             if (err) {
                 return next(err);
+            }
+
+            if (compress) {
+                var result = uglifyjs.minify(src, {
+                    fromString: true
+                });
+
+                src = result.code;
             }
 
             if (cache) {
