@@ -16,15 +16,22 @@ module.exports = function enchilada(opt) {
     var routes = opt.routes || {};
     var bundles = {};
 
+    var cache;
+
+    // if user wants in memory cache, enable it
+    if (opt.cache) {
+        cache = {};
+    }
+
     var externs = Object.keys(routes).map(function(id) {
         var name = routes[id];
 
         // if the name is not relative, then it is a module
-        if (name[0] !== '/') {
+        if (name[0] !== '.') {
             return bundles[id] = script.module(name);
         }
 
-        var jsfile = path.join(pubdir, id);
+        var jsfile = path.normalize(path.join(pubdir, id));
         return bundles[id] = script.file(jsfile);
     });
 
@@ -35,9 +42,18 @@ module.exports = function enchilada(opt) {
 
         res.contentType('application/javascript');
 
+        // TODO(shtylman) option to specify path for require.js file?
         if (req.url === '/js/require.js') {
             res.sendfile(script.client.filename);
             return;
+        }
+
+        // check cache, opt.cache enables cache
+        if (cache) {
+            var cached = cache[req.url];
+            if (cached) {
+                return res.send(cached);
+            }
         }
 
         var bundle = bundles[req.url];
@@ -54,6 +70,10 @@ module.exports = function enchilada(opt) {
         bundle.generate(function(err, src) {
             if (err) {
                 return next(err);
+            }
+
+            if (cache) {
+                cache[req.url] = src;
             }
 
             res.send(src);

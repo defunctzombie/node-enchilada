@@ -20,10 +20,11 @@ Just add the proper ingredients and your enchilada will be served up as you requ
 
 ```javascript
 app.use(enchilada({
-    src: __dirname + '/public',
+    src: __dirname + '/public', // location of your js files
+    cache: true || false, //  default false
     routes: {
-        // key is the url route, value is either a file under src or a module
-        '/js/jquery.js': '/js/jquery.js',
+        // key is the url route, value is either a file relative to src
+        '/js/jquery.js': './js/jquery.js',
         // here we serve up a module
         '/js/engine.io.js': 'engine.io-client'
     }
