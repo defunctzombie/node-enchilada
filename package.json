@@ -19,6 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "mime": "1.2.7",
-    "script": "0.1.0-pre3"
+    "script": "0.1.0-pre4"
   }
 }
