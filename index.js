@@ -1,10 +1,12 @@
 // builtin
 var path = require('path');
+var fs = require('fs');
 
 // vendor
 var mime = require('mime');
 var script = require('script');
 var uglifyjs = require('uglify-js');
+var httperrors = require('httperrors');
 
 module.exports = function enchilada(opt) {
 
@@ -38,9 +40,16 @@ module.exports = function enchilada(opt) {
     });
 
     return function(req, res, next) {
-        if (mime.lookup(req.url) !== 'application/javascript') {
+        if (mime.lookup(req.path) !== 'application/javascript') {
             return next();
         };
+
+        var url = path.normalize(path.join(pubdir, req.path));
+
+        // check for malicious attempts to access outside of pubdir
+        if (url.indexOf(pubdir) !== 0) {
+            return next(new httperrors.Forbidden());
+        }
 
         res.contentType('application/javascript');
 
@@ -52,42 +61,52 @@ module.exports = function enchilada(opt) {
 
         // check cache, opt.cache enables cache
         if (cache) {
-            var cached = cache[req.url];
+            var cached = cache[url];
             if (cached) {
                 return res.send(cached);
             }
         }
 
-        var bundle = bundles[req.url];
+        var bundle = bundles[url];
+        if (bundle) {
+            return generate(bundle);
+        }
 
         // lookup in filesystem
-        if (!bundle) {
-            var jsfile = path.join(pubdir, req.url);
-            bundle = script.file(jsfile, {
+        fs.exists(url, function(exists) {
+            if (!exists) {
+                return next(new httperrors.NotFound());
+            }
+
+            var bundle = script.file(url, {
                 main: true,
                 external: externs
             });
-        }
 
-        bundle.generate(function(err, src) {
-            if (err) {
-                return next(err);
-            }
-
-            if (compress) {
-                var result = uglifyjs.minify(src, {
-                    fromString: true
-                });
-
-                src = result.code;
-            }
-
-            if (cache) {
-                cache[req.url] = src;
-            }
-
-            res.send(src);
+            generate(bundle);
         });
+
+        function generate(bundle) {
+            bundle.generate(function(err, src) {
+                if (err) {
+                    return next(err);
+                }
+
+                if (compress) {
+                    var result = uglifyjs.minify(src, {
+                        fromString: true
+                    });
+
+                    src = result.code;
+                }
+
+                if (cache) {
+                    cache[url] = src;
+                }
+
+                res.send(src);
+            });
+        }
     };
 }
 
