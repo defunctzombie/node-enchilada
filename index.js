@@ -40,45 +40,46 @@ module.exports = function enchilada(opt) {
     });
 
     return function(req, res, next) {
-        if (mime.lookup(req.path) !== 'application/javascript') {
+        var req_path = req.path;
+        if (mime.lookup(req_path) !== 'application/javascript') {
             return next();
         };
-
-        var url = path.normalize(path.join(pubdir, req.path));
-
-        // check for malicious attempts to access outside of pubdir
-        if (url.indexOf(pubdir) !== 0) {
-            return next(new httperrors.Forbidden());
-        }
 
         res.contentType('application/javascript');
 
         // TODO(shtylman) option to specify path for require.js file?
-        if (req.url === '/js/require.js') {
+        if (req_path === '/js/require.js') {
             res.sendfile(script.client.filename);
             return;
         }
 
+        var local_file = path.normalize(path.join(pubdir, req_path));
+
+        // check for malicious attempts to access outside of pubdir
+        if (local_file.indexOf(pubdir) !== 0) {
+            return next(new httperrors.Forbidden());
+        }
+
         // check cache, opt.cache enables cache
         if (cache) {
-            var cached = cache[url];
+            var cached = cache[req_path];
             if (cached) {
                 return res.send(cached);
             }
         }
 
-        var bundle = bundles[url];
+        var bundle = bundles[req_path];
         if (bundle) {
             return generate(bundle);
         }
 
         // lookup in filesystem
-        fs.exists(url, function(exists) {
+        fs.exists(local_file, function(exists) {
             if (!exists) {
                 return next(new httperrors.NotFound());
             }
 
-            var bundle = script.file(url, {
+            var bundle = script.file(local_file, {
                 main: true,
                 external: externs
             });
@@ -101,7 +102,7 @@ module.exports = function enchilada(opt) {
                 }
 
                 if (cache) {
-                    cache[url] = src;
+                    cache[req_path] = src;
                 }
 
                 res.send(src);
