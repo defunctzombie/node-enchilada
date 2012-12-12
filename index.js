@@ -80,6 +80,8 @@ module.exports = function enchilada(opt) {
             }
 
             var bundle = script.file(local_file, {
+                // if no external bundles are used, then package require code with each file
+                client: externs.length === 0,
                 main: true,
                 external: externs
             });
