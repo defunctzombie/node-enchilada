@@ -12,9 +12,11 @@ app.use(enchilada(__dirname + '/public'));
 app.use(express.static(__dirname + '/public'));
 ```
 
+Now just visit any ```.js``` url which maps to a path under /public and the packaged file will be served.
+
 ## with ingredients
 
-No one likes a stale enchilada. Out in the real world, you want to leverage browser caching for rarely changing files.
+No one likes a stale enchilada. Out in the real world, you want to leverage browser caching for rarely changing files. Imagine that your project uses files like jquery or [engine.io](https://github.com/LearnBoost/engine.io-client), these files don't change as much as your app code. It would be silly to keep sending them with every js file you serve up. Enchilada makes this easy to do.
 
 Just add the proper ingredients and your enchilada will be served up as you requested.
 
@@ -26,10 +28,24 @@ app.use(enchilada({
     routes: {
         // key is the url route, value is either a file relative to src
         '/js/jquery.js': './js/jquery.js',
-        // here we serve up a module
+        // or a module installed via npm
         '/js/engine.io.js': 'engine.io-client'
     }
 });
+```
+
+Now just make sure you load the required scripts before any other js file that might use them.
+
+```html
+<!-- provides the require functionality, needed now that several scripts are used -->
+<script src="/js/require.js"></script>
+
+<!-- load the scripts we know will be used by several files -->
+<script src="/js/jquery.js"></script>
+<script src="/js/engine.io.js"></script>
+
+<!-- load other js files as you would before -->
+<script src="/js/app.js"></script>
 ```
 
 ## install
