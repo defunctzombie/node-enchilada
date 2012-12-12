@@ -50,7 +50,7 @@ Now just make sure you load the required scripts before any other js file that m
 
 ## examples
 
-See the [examples](tree/master/examples) directory for working code you can copy and paste.
+See the [examples](node-enchilada/tree/master/examples) directory for working code you can copy and paste.
 
 ## install
 
