@@ -48,6 +48,10 @@ Now just make sure you load the required scripts before any other js file that m
 <script src="/js/app.js"></script>
 ```
 
+## examples
+
+See the [examples](tree/master/examples) directory for working code you can copy and paste.
+
 ## install
 
 Install with [npm](https://npmjs.org)
