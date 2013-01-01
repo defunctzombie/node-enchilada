@@ -27,25 +27,35 @@ module.exports = function enchilada(opt) {
         cache = {};
     }
 
+    // TODO(shtylman) externs that use other externs?
     var externs = Object.keys(routes).map(function(id) {
         var name = routes[id];
 
+        var opt = {
+            // don't bundle require code with externs
+            client: false
+        };
+
         // if the name is not relative, then it is a module
         if (name[0] !== '.') {
-            return bundles[id] = script.module(name);
+            return bundles[id] = script.module(name, opt);
         }
 
         var jsfile = path.normalize(path.join(pubdir, id));
-        return bundles[id] = script.file(jsfile);
+        return bundles[id] = script.file(jsfile, opt);
     });
 
     return function(req, res, next) {
         var req_path = req.path;
-        if (mime.lookup(req_path) !== 'application/javascript') {
+
+        // if no extension, then don't process
+        // handles case of directories and other random urls
+        if (!path.extname(req_path)) {
+            return next();
+        }
+        else if (mime.lookup(req_path) !== 'application/javascript') {
             return next();
         };
-
-        res.contentType('application/javascript');
 
         // TODO(shtylman) option to specify path for require.js file?
         if (req_path === '/js/require.js') {
@@ -64,6 +74,7 @@ module.exports = function enchilada(opt) {
         if (cache) {
             var cached = cache[req_path];
             if (cached) {
+                res.contentType('application/javascript');
                 return res.send(cached);
             }
         }
@@ -107,6 +118,7 @@ module.exports = function enchilada(opt) {
                     cache[req_path] = src;
                 }
 
+                res.contentType('application/javascript');
                 res.send(src);
             });
         }
