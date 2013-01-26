@@ -70,6 +70,11 @@ module.exports = function enchilada(opt) {
             return next(new httperrors.Forbidden());
         }
 
+        // skip things we don't know about
+        if (!fs.existsSync(local_file)) {
+            return next();
+        }
+
         // check cache, opt.cache enables cache
         if (cache) {
             var cached = cache[req_path];
