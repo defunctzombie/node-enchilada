@@ -63,6 +63,11 @@ module.exports = function enchilada(opt) {
             return;
         }
 
+        var bundle = bundles[req_path];
+        if (bundle) {
+            return generate(bundle);
+        }
+
         var local_file = path.normalize(path.join(pubdir, req_path));
 
         // check for malicious attempts to access outside of pubdir
@@ -82,11 +87,6 @@ module.exports = function enchilada(opt) {
                 res.contentType('application/javascript');
                 return res.send(cached);
             }
-        }
-
-        var bundle = bundles[req_path];
-        if (bundle) {
-            return generate(bundle);
         }
 
         // lookup in filesystem
