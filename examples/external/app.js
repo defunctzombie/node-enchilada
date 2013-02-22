@@ -6,7 +6,7 @@ var app = express();
 app.use(enchilada({
     src: __dirname + '/public',
     routes: {
-        '/js/engine.io.js': 'engine.io-client'
+        '/js/external.js': 'external'
     }
 }));
 

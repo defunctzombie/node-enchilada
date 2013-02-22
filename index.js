@@ -4,9 +4,9 @@ var fs = require('fs');
 
 // vendor
 var mime = require('mime');
-var script = require('script');
 var uglifyjs = require('uglify-js');
 var httperrors = require('httperrors');
+var browserify = require('browserify');
 
 module.exports = function enchilada(opt) {
 
@@ -27,6 +27,9 @@ module.exports = function enchilada(opt) {
         cache = {};
     }
 
+    // list of files or modules which exist in other bundles
+    var ignores = [];
+
     // TODO(shtylman) externs that use other externs?
     var externs = Object.keys(routes).map(function(id) {
         var name = routes[id];
@@ -38,11 +41,15 @@ module.exports = function enchilada(opt) {
 
         // if the name is not relative, then it is a module
         if (name[0] !== '.') {
-            return bundles[id] = script.module(name, opt);
+            bundle = browserify();
+            bundle.require(name);
+            ignores.push(name);
+            return bundles[id] = bundle;
         }
 
         var jsfile = path.normalize(path.join(pubdir, id));
-        return bundles[id] = script.file(jsfile, opt);
+        ignores.push(jsfile);
+        return bundles[id] = browserify([jsfile]);
     });
 
     return function(req, res, next) {
@@ -56,12 +63,6 @@ module.exports = function enchilada(opt) {
         else if (mime.lookup(req_path) !== 'application/javascript') {
             return next();
         };
-
-        // TODO(shtylman) option to specify path for require.js file?
-        if (req_path === '/js/require.js') {
-            res.sendfile(script.client.filename);
-            return;
-        }
 
         var bundle = bundles[req_path];
         if (bundle) {
@@ -95,18 +96,16 @@ module.exports = function enchilada(opt) {
                 return next(new httperrors.NotFound());
             }
 
-            var bundle = script.file(local_file, {
-                // if no external bundles are used, then package require code with each file
-                client: externs.length === 0,
-                main: true,
-                external: externs
-            });
+            var bundle = browserify(local_file);
 
+            ignores.forEach(function(ignore) {
+                bundle.ignore(ignore);
+            });
             generate(bundle);
         });
 
         function generate(bundle) {
-            bundle.generate(function(err, src) {
+            bundle.bundle(function(err, src) {
                 if (err) {
                     return next(err);
                 }
