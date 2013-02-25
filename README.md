@@ -1,6 +1,6 @@
 # enchilada [![Build Status](https://secure.travis-ci.org/shtylman/node-enchilada.png?branch=master)](http://travis-ci.org/shtylman/node-enchilada)
 
-serve up your javascript files all wrapped up. Yum!
+serve up your javascript files all wrapped up using [browserify](https://github.com/substack/node-browserify). Yum!
 
 ```javascript
 var app = express();
