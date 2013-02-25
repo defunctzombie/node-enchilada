@@ -28,7 +28,7 @@ module.exports = function enchilada(opt) {
     }
 
     // list of files or modules which exist in other bundles
-    var ignores = [];
+    var externals = [];
 
     // TODO(shtylman) externs that use other externs?
     var externs = Object.keys(routes).map(function(id) {
@@ -39,17 +39,10 @@ module.exports = function enchilada(opt) {
             client: false
         };
 
-        // if the name is not relative, then it is a module
-        if (name[0] !== '.') {
-            bundle = browserify();
-            bundle.require(name);
-            ignores.push(name);
-            return bundles[id] = bundle;
-        }
-
-        var jsfile = path.normalize(path.join(pubdir, id));
-        ignores.push(jsfile);
-        return bundles[id] = browserify([jsfile]);
+        var bundle = browserify();
+        bundle.require(name, { expose: true, basedir: pubdir });
+        externals.push(name);
+        return bundles[id] = bundle;
     });
 
     return function(req, res, next) {
@@ -98,8 +91,8 @@ module.exports = function enchilada(opt) {
 
             var bundle = browserify(local_file);
 
-            ignores.forEach(function(ignore) {
-                bundle.ignore(ignore);
+            externals.forEach(function(external) {
+                bundle.require(external, { external: true, basedir: pubdir });
             });
             generate(bundle);
         });
