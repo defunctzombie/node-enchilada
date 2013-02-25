@@ -37,9 +37,6 @@ app.use(enchilada({
 Now just make sure you load the required scripts before any other js file that might use them.
 
 ```html
-<!-- provides the require functionality, needed now that several scripts are used -->
-<script src="/js/require.js"></script>
-
 <!-- load the scripts we know will be used by several files -->
 <script src="/js/jquery.js"></script>
 <script src="/js/engine.io.js"></script>
