@@ -21,6 +21,14 @@ module.exports = function enchilada(opt) {
 
     var compress = false || opt.compress;
     var cache;
+    
+    function addTransforms(bundle) {
+        if (opt.transforms) {
+            opt.transforms.forEach(function(t) {
+                bundle.transform(t);
+            });
+        } 
+    }
 
     // if user wants in memory cache, enable it
     if (opt.cache) {
@@ -40,6 +48,7 @@ module.exports = function enchilada(opt) {
         };
 
         var bundle = browserify();
+        addTransforms(bundle);
         bundle.require(name, { expose: true, basedir: pubdir });
         externals.push(name);
         return bundles[id] = bundle;
@@ -90,6 +99,7 @@ module.exports = function enchilada(opt) {
             }
 
             var bundle = browserify(local_file);
+            addTransforms(bundle);
 
             externals.forEach(function(external) {
                 bundle.require(external, { external: true, basedir: pubdir });
