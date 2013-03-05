@@ -14,11 +14,6 @@ var transformed = false;
 test('setup', function(done) {
     app.use(enchilada({
         src:__dirname + '/assets',
-        configure:function(bundle) {
-            assert.ok(bundle);
-            assert.ok(bundle.transform);
-            transformed = true;
-        },
         transforms: [ function(file) {
             assert.ok(/\.js$/.test(file));
             return through(

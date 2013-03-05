@@ -23,11 +23,10 @@ module.exports = function enchilada(opt) {
     var cache;
     
     function addTransforms(bundle) {
-        if (opt.transforms) {
-            opt.transforms.forEach(function(t) {
-                bundle.transform(t);
-            });
-        } 
+        if (!opt.transforms) {
+            return;
+        }
+        opt.transforms.forEach(bundle.transform.bind(bundle));
     }
 
     // if user wants in memory cache, enable it
