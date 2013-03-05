@@ -28,6 +28,7 @@
     "mocha": "1.8.1",
     "after": "0.6.0",
     "supertest": "0.5.1",
-    "express": "3.1.0"
+    "express": "3.1.0",
+    "through":"2.2.1"
   }
 }
