@@ -40,6 +40,7 @@ module.exports = function enchilada(opt) {
         };
 
         var bundle = browserify();
+        opt.configure && opt.configure(bundle);
         bundle.require(name, { expose: true, basedir: pubdir });
         externals.push(name);
         return bundles[id] = bundle;
@@ -90,6 +91,7 @@ module.exports = function enchilada(opt) {
             }
 
             var bundle = browserify(local_file);
+            opt.configure && opt.configure(bundle);
 
             externals.forEach(function(external) {
                 bundle.require(external, { external: true, basedir: pubdir });
