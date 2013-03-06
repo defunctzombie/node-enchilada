@@ -1,6 +1,6 @@
 {
   "name": "enchilada",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "express/connect middleware for javascript bundles",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,6 @@
     "after": "0.6.0",
     "supertest": "0.5.1",
     "express": "3.1.0",
-    "through":"2.2.1"
+    "through": "2.2.1"
   }
 }
