@@ -21,7 +21,7 @@ module.exports = function enchilada(opt) {
 
     var compress = false || opt.compress;
     var cache;
-    
+
     function addTransforms(bundle) {
         if (!opt.transforms) {
             return;
