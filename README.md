@@ -30,8 +30,9 @@ app.use(enchilada({
         '/js/jquery.js': './js/jquery.js',
         // or a module installed via npm
         '/js/engine.io.js': 'engine.io-client'
-    }
-});
+    },
+    transforms: [ handleify, brfs ]
+}));
 ```
 
 Now just make sure you load the required scripts before any other js file that might use them.
@@ -47,7 +48,7 @@ Now just make sure you load the required scripts before any other js file that m
 
 ## examples
 
-See the [examples](node-enchilada/tree/master/examples) directory for working code you can copy and paste.
+See the [examples](examples) directory for working code you can copy and paste.
 
 ## install
 
