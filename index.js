@@ -48,6 +48,7 @@ module.exports = function enchilada(opt) {
 
         var bundle = browserify();
         addTransforms(bundle);
+        bundle.expose_all = true;
         bundle.require(name, { expose: true, basedir: pubdir });
         externals.push(name);
         return bundles[id] = bundle;
@@ -63,7 +64,7 @@ module.exports = function enchilada(opt) {
         }
         else if (mime.lookup(req_path) !== 'application/javascript') {
             return next();
-        };
+        }
 
         var bundle = bundles[req_path];
         if (bundle) {
@@ -100,9 +101,10 @@ module.exports = function enchilada(opt) {
             var bundle = browserify(local_file);
             addTransforms(bundle);
 
-            externals.forEach(function(external) {
-                bundle.require(external, { external: true, basedir: pubdir });
-            });
+            for (var id in bundles) {
+                bundle.require(bundles[id]);
+            }
+
             generate(bundle);
         });
 
@@ -129,5 +131,5 @@ module.exports = function enchilada(opt) {
             });
         }
     };
-}
+};
 
