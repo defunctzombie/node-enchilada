@@ -20,8 +20,7 @@
   "dependencies": {
     "mime": "1.2.9",
     "browserify": "shtylman/node-browserify#smart-multi",
-    "uglify-js": "2.2.5",
-    "httperrors": "0.2.0"
+    "uglify-js": "2.2.5"
   },
   "devDependencies": {
     "connect": "2.7.3",

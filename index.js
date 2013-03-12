@@ -5,7 +5,6 @@ var fs = require('fs');
 // vendor
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
-var httperrors = require('httperrors');
 var browserify = require('browserify');
 
 module.exports = function enchilada(opt) {
@@ -75,7 +74,7 @@ module.exports = function enchilada(opt) {
 
         // check for malicious attempts to access outside of pubdir
         if (local_file.indexOf(pubdir) !== 0) {
-            return next(new httperrors.Forbidden());
+            return next();
         }
 
         // check cache, opt.cache enables cache
