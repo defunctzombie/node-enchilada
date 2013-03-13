@@ -20,14 +20,14 @@
   "dependencies": {
     "mime": "1.2.9",
     "browserify": "shtylman/node-browserify#smart-multi",
-    "uglify-js": "2.2.5"
+    "uglify-js": "2.2.5",
+    "through": "2.2.1"
   },
   "devDependencies": {
     "connect": "2.7.3",
     "mocha": "1.8.1",
     "after": "0.6.0",
     "supertest": "0.5.1",
-    "express": "3.1.0",
-    "through": "2.2.1"
+    "express": "3.1.0"
   }
 }
