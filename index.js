@@ -6,6 +6,7 @@ var fs = require('fs');
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
 var browserify = require('browserify');
+var through = require('through');
 
 module.exports = function enchilada(opt) {
 
@@ -19,18 +20,21 @@ module.exports = function enchilada(opt) {
     var bundles = {};
 
     var compress = false || opt.compress;
-    var cache;
+    var cache = {};
+    
+    var watch = !opt.cache;
+    var watchCallback = opt.watchCallback; 
 
     function addTransforms(bundle) {
-        if (!opt.transforms) {
-            return;
+        bundle.allFiles = [];
+        // Pass-through transform that logs all filenames
+        bundle.transform(function(filename) {
+            bundle.allFiles.push(filename);
+            return through();
+        });
+        if (opt.transforms) {
+            opt.transforms.forEach(bundle.transform.bind(bundle));
         }
-        opt.transforms.forEach(bundle.transform.bind(bundle));
-    }
-
-    // if user wants in memory cache, enable it
-    if (opt.cache) {
-        cache = {};
     }
 
     // list of files or modules which exist in other bundles
@@ -65,9 +69,16 @@ module.exports = function enchilada(opt) {
             return next();
         }
 
+        // check cache
+        var cached = cache[req_path];
+        if (cached) {
+            return sendResponse(null, cached);
+        }
+
+        // check for bundle
         var bundle = bundles[req_path];
         if (bundle) {
-            return generate(bundle);
+            return generate(bundle, sendResponse);
         }
 
         var local_file = path.normalize(path.join(pubdir, req_path));
@@ -75,15 +86,6 @@ module.exports = function enchilada(opt) {
         // check for malicious attempts to access outside of pubdir
         if (local_file.indexOf(pubdir) !== 0) {
             return next();
-        }
-
-        // check cache, opt.cache enables cache
-        if (cache) {
-            var cached = cache[req_path];
-            if (cached) {
-                res.contentType('application/javascript');
-                return res.send(cached);
-            }
         }
 
         // lookup in filesystem
@@ -98,14 +100,13 @@ module.exports = function enchilada(opt) {
             for (var id in bundles) {
                 bundle.require(bundles[id]);
             }
-
-            generate(bundle);
+            generate(bundle, sendResponse);
         });
 
-        function generate(bundle) {
+        function generate(bundle, callback) {
             bundle.bundle(function(err, src) {
                 if (err) {
-                    return next(err);
+                    return callback(err);
                 }
 
                 if (compress) {
@@ -116,13 +117,35 @@ module.exports = function enchilada(opt) {
                     src = result.code;
                 }
 
-                if (cache) {
-                    cache[req_path] = src;
+                cache[req_path] = src;
+                if (watch) {
+                    watchFiles(bundle, req_path);
                 }
 
-                res.contentType('application/javascript');
-                res.send(src);
+                callback(null, src);
             });
+        }
+        
+        function sendResponse(err, src) {
+            if (err) {
+                return next(err);
+            }
+            res.contentType('application/javascript');
+            res.send(src);
+        }
+        
+        function watchFiles(bundle, path) {
+            var watchers = bundle.allFiles.map(function(filename) {
+                return fs.watch(filename, { persistent:false }, function() {
+                    delete cache[path];
+                    generate(bundle, function() {
+                        watchCallback && watchCallback(path);
+                    });
+                    watchers.forEach(function(watcher) { 
+                        watcher.close(); 
+                    });
+                })
+            })
         }
     };
 };
