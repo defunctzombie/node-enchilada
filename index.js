@@ -26,7 +26,6 @@ module.exports = function enchilada(opt) {
     var watchCallback = opt.watchCallback; 
 
     function addTransforms(bundle) {
-        bundle.allFiles = [];
         // Pass-through transform that logs all filenames
         bundle.transform(function(filename) {
             bundle.allFiles.push(filename);
@@ -104,6 +103,7 @@ module.exports = function enchilada(opt) {
         });
 
         function generate(bundle, callback) {
+            bundle.allFiles = [];
             bundle.bundle(function(err, src) {
                 if (err) {
                     return callback(err);
