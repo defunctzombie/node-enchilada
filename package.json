@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "mime": "1.2.9",
-    "browserify": "shtylman/node-browserify#smart-multi",
+    "browserify": "shtylman/node-browserify#2.6.0-dz0",
     "uglify-js": "2.2.5",
     "through": "2.2.1"
   },
