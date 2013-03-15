@@ -21,6 +21,7 @@ module.exports = function enchilada(opt) {
 
     var compress = false || opt.compress;
     var cache = {};
+    var debug = false || opt.debug;
 
     var watch = !opt.cache;
     var watchCallback = opt.watchCallback;
@@ -104,7 +105,7 @@ module.exports = function enchilada(opt) {
 
         function generate(bundle, callback) {
             bundle.allFiles = [];
-            bundle.bundle(function(err, src) {
+            bundle.bundle({ debug: debug }, function(err, src) {
                 if (err) {
                     return callback(err);
                 }
