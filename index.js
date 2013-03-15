@@ -21,9 +21,9 @@ module.exports = function enchilada(opt) {
 
     var compress = false || opt.compress;
     var cache = {};
-    
+
     var watch = !opt.cache;
-    var watchCallback = opt.watchCallback; 
+    var watchCallback = opt.watchCallback;
 
     function addTransforms(bundle) {
         // Pass-through transform that logs all filenames
@@ -125,7 +125,7 @@ module.exports = function enchilada(opt) {
                 callback(null, src);
             });
         }
-        
+
         function sendResponse(err, src) {
             if (err) {
                 return next(err);
@@ -133,7 +133,7 @@ module.exports = function enchilada(opt) {
             res.contentType('application/javascript');
             res.send(src);
         }
-        
+
         function watchFiles(bundle, path) {
             var watchers = bundle.allFiles.map(function(filename) {
                 return fs.watch(filename, { persistent:false }, function() {
@@ -141,11 +141,11 @@ module.exports = function enchilada(opt) {
                     generate(bundle, function() {
                         watchCallback && watchCallback(path);
                     });
-                    watchers.forEach(function(watcher) { 
-                        watcher.close(); 
+                    watchers.forEach(function(watcher) {
+                        watcher.close();
                     });
-                })
-            })
+                });
+            });
         }
     };
 };
