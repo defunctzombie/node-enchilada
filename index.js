@@ -27,11 +27,6 @@ module.exports = function enchilada(opt) {
     var watchCallback = opt.watchCallback;
 
     function addTransforms(bundle) {
-        // Pass-through transform that logs all filenames
-        bundle.transform(function(filename) {
-            bundle.allFiles.push(filename);
-            return through();
-        });
         if (opt.transforms) {
             opt.transforms.forEach(bundle.transform.bind(bundle));
         }
@@ -104,8 +99,22 @@ module.exports = function enchilada(opt) {
         });
 
         function generate(bundle, callback) {
-            bundle.allFiles = [];
+            var dependencies = [];
+            var originalDeps = bundle.deps;
+            if (watch) {
+                // Proxy bundle.deps() so that we can get the full list of dependencies used by bundle.bundle()
+                bundle.deps = function(opts) {
+                    var stream = originalDeps.call(this, opts);
+                    stream.on('data', function(dependency) {
+                        dependencies.push(dependency.id);
+                    });
+                    return stream;
+                };
+            }
             bundle.bundle({ debug: debug }, function(err, src) {
+                if (watch) {
+                    bundle.deps = originalDeps;
+                }
                 if (err) {
                     return callback(err);
                 }
@@ -120,7 +129,7 @@ module.exports = function enchilada(opt) {
 
                 cache[req_path] = src;
                 if (watch) {
-                    watchFiles(bundle, req_path);
+                    watchFiles(bundle, dependencies, req_path);
                 }
 
                 callback(null, src);
@@ -135,8 +144,8 @@ module.exports = function enchilada(opt) {
             res.send(src);
         }
 
-        function watchFiles(bundle, path) {
-            var watchers = bundle.allFiles.map(function(filename) {
+        function watchFiles(bundle, dependencies, path) {
+            var watchers = dependencies.map(function(filename) {
                 return fs.watch(filename, { persistent:false }, function() {
                     delete cache[path];
                     generate(bundle, function() {
