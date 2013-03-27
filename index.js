@@ -148,8 +148,8 @@ module.exports = function enchilada(opt) {
             var watchers = dependencies.map(function(filename) {
                 return fs.watch(filename, { persistent:false }, function() {
                     delete cache[path];
-                    generate(bundle, function() {
-                        watchCallback && watchCallback(path);
+                    generate(bundle, function(error) {
+                        watchCallback && watchCallback(error, path);
                     });
                     watchers.forEach(function(watcher) {
                         watcher.close();
