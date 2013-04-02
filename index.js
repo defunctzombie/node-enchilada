@@ -111,12 +111,21 @@ module.exports = function enchilada(opt) {
                     return stream;
                 };
             }
+            // typically SyntaxError
+            var otherError;
+            bundle.once('error', function(err) {
+                otherError = err;
+                callback(err);
+            });
             bundle.bundle({ debug: debug }, function(err, src) {
                 if (watch) {
                     bundle.deps = originalDeps;
                 }
                 if (err) {
                     return callback(err);
+                }
+                if (otherError) {
+                    return callback(otherError);
                 }
 
                 if (compress) {
