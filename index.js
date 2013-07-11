@@ -8,6 +8,8 @@ var uglifyjs = require('uglify-js');
 var browserify = require('browserify');
 var through = require('through');
 
+var watcher = require('./watcher')
+
 module.exports = function enchilada(opt) {
 
     // if just a path is passed in, treat as public file dir
@@ -113,13 +115,11 @@ module.exports = function enchilada(opt) {
             }
             // typically SyntaxError
             var otherError;
-            bundle.once('error', function(err) {
-                otherError = err;
-                callback(err);
-            });
+            bundle.once('error', function(err) { otherError = err; });
             bundle.bundle({ debug: debug }, function(err, src) {
                 if (watch) {
                     bundle.deps = originalDeps;
+                    watchFiles(bundle, dependencies, req_path);
                 }
                 if (err) {
                     return callback(err);
@@ -127,7 +127,6 @@ module.exports = function enchilada(opt) {
                 if (otherError) {
                     return callback(otherError);
                 }
-
                 if (compress) {
                     var result = uglifyjs.minify(src, {
                         fromString: true
@@ -135,11 +134,7 @@ module.exports = function enchilada(opt) {
 
                     src = result.code;
                 }
-
                 cache[req_path] = src;
-                if (watch) {
-                    watchFiles(bundle, dependencies, req_path);
-                }
 
                 callback(null, src);
             });
@@ -155,7 +150,7 @@ module.exports = function enchilada(opt) {
 
         function watchFiles(bundle, dependencies, path) {
             var watchers = dependencies.map(function(filename) {
-                return fs.watch(filename, { persistent:false }, function() {
+                return watcher(filename, function() {
                     delete cache[path];
                     generate(bundle, function(error) {
                         watchCallback && watchCallback(error, path);
