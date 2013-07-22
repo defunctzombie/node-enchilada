@@ -94,28 +94,24 @@ module.exports = function enchilada(opt) {
             var bundle = browserify(local_file);
             addTransforms(bundle);
 
-            for (var id in bundles) {
-                bundle.require(bundles[id]);
-            }
+            Object.keys(bundles).forEach(function(id) {
+                bundle.require(id, bundles[id]);
+            });
             generate(bundle, sendResponse);
         });
 
         function generate(bundle, callback) {
             var dependencies = [];
             var originalDeps = bundle.deps;
-            if (watch) {
-                // Proxy bundle.deps() so that we can get the full list of dependencies used by bundle.bundle()
-                bundle.deps = function(opts) {
-                    var stream = originalDeps.call(this, opts);
-                    stream.on('data', function(dependency) {
-                        dependencies.push(dependency.id);
-                    });
-                    return stream;
-                };
-            }
+
             // typically SyntaxError
             var otherError;
             bundle.once('error', function(err) { otherError = err; });
+            if (watch) {
+                bundle.on('file', function(file) {
+                    dependencies.push(file);
+                });
+            }
             bundle.bundle({ debug: debug }, function(err, src) {
                 if (watch) {
                     bundle.deps = originalDeps;
