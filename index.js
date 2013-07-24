@@ -34,9 +34,6 @@ module.exports = function enchilada(opt) {
         }
     }
 
-    // list of files or modules which exist in other bundles
-    var externals = [];
-
     // TODO(shtylman) externs that use other externs?
     var externs = Object.keys(routes).map(function(id) {
         var name = routes[id];
@@ -46,11 +43,9 @@ module.exports = function enchilada(opt) {
             client: false
         };
 
-        var bundle = browserify();
+        var bundle = browserify({ expose_all: true });
         addTransforms(bundle);
-        bundle.expose_all = true;
         bundle.require(name, { expose: true, basedir: pubdir });
-        externals.push(name);
         return bundles[id] = bundle;
     });
 
@@ -95,7 +90,7 @@ module.exports = function enchilada(opt) {
             addTransforms(bundle);
 
             Object.keys(bundles).forEach(function(id) {
-                bundle.require(id, bundles[id]);
+                bundle.external(bundles[id]);
             });
             generate(bundle, sendResponse);
         });

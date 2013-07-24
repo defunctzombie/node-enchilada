@@ -1,6 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 var EventEmitter = require('events').EventEmitter
+var debug = require('debug')('enchilada');
 
 var emitter = new EventEmitter
 var listeners = {}
@@ -17,7 +18,7 @@ module.exports = function onChange(filename, callback) {
             }
         }
 
-        console.log("Watching "+filename)
+        debug('Watching %s', filename)
 
         // Watch the file
         fs.watchFile(filename, {
@@ -34,7 +35,7 @@ module.exports = function onChange(filename, callback) {
         close: function() {
             emitter.removeListener(filename, callback)
             if (emitter.listeners(filename).length === 0) {
-                console.log("Unwatching "+filename)
+                debug('Unwatching %s', filename)
                 fs.unwatchFile(filename, listeners[filename])
                 delete listeners[filename]
             }
