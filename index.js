@@ -1,6 +1,7 @@
 // builtin
 var path = require('path');
 var fs = require('fs');
+var crypto = require('crypto');
 
 // vendor
 var mime = require('mime');
@@ -136,6 +137,8 @@ module.exports = function enchilada(opt) {
                 return next(err);
             }
             res.contentType('application/javascript');
+            res.header('ETag', crypto.createHash('md5').update(src).digest('hex').slice(0, 6));
+            res.header('Vary', 'Accept-Encoding');
             res.send(src);
         }
 
