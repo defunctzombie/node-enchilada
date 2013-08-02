@@ -96,7 +96,7 @@ module.exports = function enchilada(opt) {
         });
 
         function generate(bundle, callback) {
-            var dependencies = [];
+            var dependencies = {};
             var originalDeps = bundle.deps;
 
             // typically SyntaxError
@@ -104,7 +104,7 @@ module.exports = function enchilada(opt) {
             bundle.once('error', function(err) { otherError = err; });
             if (watch) {
                 bundle.on('file', function(file) {
-                    dependencies.push(file);
+                    dependencies[file] = true;
                 });
             }
             bundle.bundle({ debug: debug }, function(err, src) {
@@ -140,7 +140,7 @@ module.exports = function enchilada(opt) {
         }
 
         function watchFiles(bundle, dependencies, path) {
-            var watchers = dependencies.map(function(filename) {
+            var watchers = Object.keys(dependencies).map(function(filename) {
                 return watcher(filename, function() {
                     delete cache[path];
                     generate(bundle, function(error) {
