@@ -25,10 +25,10 @@
     "debug": "0.7.2"
   },
   "devDependencies": {
-    "connect": "2.8.4",
-    "mocha": "1.12.0",
+    "connect": "2.9.0",
+    "mocha": "1.13.0",
     "after": "0.8.1",
-    "supertest": "0.7.1",
-    "express": "3.3.4"
+    "supertest": "0.8.0",
+    "express": "3.4.0"
   }
 }
