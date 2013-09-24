@@ -44,7 +44,7 @@ module.exports = function enchilada(opt) {
             client: false
         };
 
-        var bundle = browserify({ expose_all: true });
+        var bundle = browserify({ exposeAll: true });
         addTransforms(bundle);
         bundle.require(name, { expose: name, basedir: pubdir });
         return bundles[id] = bundle;
