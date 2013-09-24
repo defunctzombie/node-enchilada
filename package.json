@@ -20,7 +20,7 @@
   "dependencies": {
     "mime": "1.2.11",
     "browserify": "2.32.4",
-    "uglify-js": "2.3.6",
+    "uglify-js": "2.4.0",
     "through": "2.3.4",
     "debug": "0.7.2"
   },
