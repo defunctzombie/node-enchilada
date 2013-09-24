@@ -18,7 +18,7 @@
   "author": "Roman Shtylman <shtylman@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mime": "1.2.9",
+    "mime": "1.2.11",
     "browserify": "2.32.4",
     "uglify-js": "2.3.6",
     "through": "2.3.4",
