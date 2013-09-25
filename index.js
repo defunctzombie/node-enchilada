@@ -29,10 +29,17 @@ module.exports = function enchilada(opt) {
     var watch = !opt.cache;
     var watchCallback = opt.watchCallback;
 
-    function addTransforms(bundle) {
+    function makeBundle(options) {
+        var bundle = browserify(options);
         if (opt.transforms) {
             opt.transforms.forEach(bundle.transform.bind(bundle));
         }
+        if (opt.externals) {
+            opt.externals.forEach(function(external) {
+                bundle.external(external);
+            });
+        }
+        return bundle;
     }
 
     // TODO(shtylman) externs that use other externs?
@@ -44,8 +51,7 @@ module.exports = function enchilada(opt) {
             client: false
         };
 
-        var bundle = browserify({ exposeAll: true });
-        addTransforms(bundle);
+        var bundle = makeBundle({ exposeAll: true });
         bundle.require(name, { expose: name, basedir: pubdir });
         return bundles[id] = bundle;
     });
@@ -87,9 +93,7 @@ module.exports = function enchilada(opt) {
                 return next();
             }
 
-            var bundle = browserify(local_file);
-            addTransforms(bundle);
-
+            var bundle = makeBundle(local_file);
             Object.keys(bundles).forEach(function(id) {
                 bundle.external(bundles[id]);
             });
