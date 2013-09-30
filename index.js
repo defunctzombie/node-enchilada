@@ -102,7 +102,6 @@ module.exports = function enchilada(opt) {
 
         function generate(bundle, callback) {
             var dependencies = {};
-            var originalDeps = bundle.deps;
 
             // typically SyntaxError
             var otherError;
@@ -114,7 +113,6 @@ module.exports = function enchilada(opt) {
             }
             bundle.bundle({ debug: debug }, function(err, src) {
                 if (watch) {
-                    bundle.deps = originalDeps;
                     watchFiles(bundle, dependencies, req_path);
                 }
                 if (err) {
