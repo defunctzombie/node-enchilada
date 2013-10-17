@@ -7,7 +7,6 @@ var crypto = require('crypto');
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
 var browserify = require('browserify');
-var through = require('through');
 
 var watcher = require('./watcher')
 

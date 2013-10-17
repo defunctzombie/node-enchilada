@@ -21,10 +21,10 @@
     "mime": "1.2.11",
     "browserify": "2.32.4",
     "uglify-js": "2.4.0",
-    "through": "2.3.4",
     "debug": "0.7.2"
   },
   "devDependencies": {
+    "through": "2.3.4",
     "connect": "2.9.0",
     "mocha": "1.13.0",
     "after": "0.8.1",
