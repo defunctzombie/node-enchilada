@@ -1,12 +1,11 @@
-// builtin
 var path = require('path');
 var fs = require('fs');
 var crypto = require('crypto');
 
-// vendor
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
 var browserify = require('browserify');
+var debug = require('debug')('enchilada');
 
 var watcher = require('./watcher')
 
@@ -23,7 +22,7 @@ module.exports = function enchilada(opt) {
 
     var compress = false || opt.compress;
     var cache = {};
-    var debug = false || opt.debug;
+    var debug_opt = false || opt.debug;
 
     var watch = !opt.cache;
     var watchCallback = opt.watchCallback;
@@ -44,6 +43,8 @@ module.exports = function enchilada(opt) {
     // TODO(shtylman) externs that use other externs?
     Object.keys(routes).map(function(id) {
         var name = routes[id];
+
+        debug('route: %s -> %s', id, name);
 
         var bundle = makeBundle({ exposeAll: true });
         bundle.require(name, { entry: true, expose: name, basedir: pubdir });
@@ -81,6 +82,8 @@ module.exports = function enchilada(opt) {
             return next();
         }
 
+        debug('bundling %s', local_file);
+
         // lookup in filesystem
         fs.exists(local_file, function(exists) {
             if (!exists) {
@@ -105,7 +108,7 @@ module.exports = function enchilada(opt) {
                     dependencies[file] = true;
                 });
             }
-            bundle.bundle({ debug: debug }, function(err, src) {
+            bundle.bundle({ debug: debug_opt }, function(err, src) {
                 if (watch) {
                     watchFiles(bundle, dependencies, req_path);
                 }

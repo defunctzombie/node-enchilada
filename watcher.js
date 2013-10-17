@@ -1,7 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 var EventEmitter = require('events').EventEmitter
-var debug = require('debug')('enchilada');
+var debug = require('debug')('enchilada:watch');
 
 var emitter = new EventEmitter
 var listeners = {}
