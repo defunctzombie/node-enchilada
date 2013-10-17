@@ -42,16 +42,11 @@ module.exports = function enchilada(opt) {
     }
 
     // TODO(shtylman) externs that use other externs?
-    var externs = Object.keys(routes).map(function(id) {
+    Object.keys(routes).map(function(id) {
         var name = routes[id];
 
-        var opt = {
-            // don't bundle require code with externs
-            client: false
-        };
-
         var bundle = makeBundle({ exposeAll: true });
-        bundle.require(name, { expose: name, basedir: pubdir });
+        bundle.require(name, { entry: true, expose: name, basedir: pubdir });
         return bundles[id] = bundle;
     });
 

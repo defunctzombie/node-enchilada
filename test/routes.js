@@ -20,7 +20,9 @@ test('setup', function(done) {
     app.listen(done);
 });
 
-test('/foo.js - not entry', function(done) {
+test('/foo.js - should run', function(done) {
+    done = after(3, done);
+
     request(app)
     .get('/foo.js')
     .end(function(err, res) {
@@ -76,7 +78,10 @@ test('/baz.js - entry', function(done) {
     });
 });
 
-test('/cats-module.js - not entry', function(done) {
+test('/cats-module.js - should run', function(done) {
+
+    done = after(2, done);
+
     request(app)
     .get('/cats-module.js')
     .end(function(err, res) {
