@@ -1,6 +1,6 @@
 {
   "name": "enchilada",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "express/connect middleware for javascript bundles",
   "main": "index.js",
   "scripts": {
