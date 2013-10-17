@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "mime": "1.2.11",
-    "browserify": "2.32.4",
+    "browserify": "2.34.1",
     "uglify-js": "2.4.0",
     "debug": "0.7.2"
   },
