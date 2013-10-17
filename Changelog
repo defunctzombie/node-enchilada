@@ -1,0 +1,3 @@
+0.5
+	* bundles from "routes" are now also entry files and run automatically
+	when loaded on the page
