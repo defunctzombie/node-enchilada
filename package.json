@@ -25,10 +25,10 @@
   },
   "devDependencies": {
     "through": "2.3.4",
-    "connect": "2.9.0",
+    "connect": "2.9.1",
     "mocha": "1.13.0",
     "after": "0.8.1",
     "supertest": "0.8.0",
-    "express": "3.4.0"
+    "express": "3.4.1"
   }
 }
