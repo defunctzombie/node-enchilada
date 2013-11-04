@@ -1,6 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var crypto = require('crypto');
+var url = require('url');
 
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
@@ -52,7 +53,7 @@ module.exports = function enchilada(opt) {
     });
 
     return function(req, res, next) {
-        var req_path = decodeURIComponent(req.url);
+        var req_path = url.parse(req.originalUrl).pathname
 
         // if no extension, then don't process
         // handles case of directories and other random urls
