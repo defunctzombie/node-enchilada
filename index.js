@@ -52,7 +52,7 @@ module.exports = function enchilada(opt) {
     });
 
     return function(req, res, next) {
-        var req_path = req.path;
+        var req_path = decodeURIComponent(req.url);
 
         // if no extension, then don't process
         // handles case of directories and other random urls
@@ -135,10 +135,10 @@ module.exports = function enchilada(opt) {
             if (err) {
                 return next(err);
             }
-            res.contentType('application/javascript');
-            res.header('ETag', crypto.createHash('md5').update(src).digest('hex').slice(0, 6));
-            res.header('Vary', 'Accept-Encoding');
-            res.send(src);
+            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('ETag', crypto.createHash('md5').update(src).digest('hex').slice(0, 6));
+            res.setHeader('Vary', 'Accept-Encoding');
+            res.end(src);
         }
 
         function watchFiles(bundle, dependencies, path) {
