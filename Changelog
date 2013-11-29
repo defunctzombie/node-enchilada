@@ -1,3 +1,6 @@
-0.5
+0.5.1
+	* update browserify to 2.36.0
+
+0.5.0
 	* bundles from "routes" are now also entry files and run automatically
 	when loaded on the page
