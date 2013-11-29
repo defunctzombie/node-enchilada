@@ -103,12 +103,18 @@ module.exports = function enchilada(opt) {
             // typically SyntaxError
             var otherError;
             bundle.once('error', function(err) { otherError = err; });
+
+            var collect_deps = function(file) {
+                dependencies[file] = true;
+            };
+
             if (watch) {
-                bundle.on('file', function(file) {
-                    dependencies[file] = true;
-                });
+                bundle.on('file', collect_deps);
             }
+
             bundle.bundle({ debug: debug_opt }, function(err, src) {
+                bundle.removeListener('file', collect_deps);
+
                 if (watch) {
                     watchFiles(bundle, dependencies, req_path);
                 }
