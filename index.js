@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var url = require('url');
 var crypto = require('crypto');
 
 var mime = require('mime');
@@ -52,15 +53,15 @@ module.exports = function enchilada(opt) {
     });
 
     return function(req, res, next) {
-        var req_path = req.path;
+        var req_path = req.path || url.parse(req.url).path;
 
         // if no extension, then don't process
         // handles case of directories and other random urls
         if (!path.extname(req_path)) {
-            return next();
+            return notFound();
         }
         else if (mime.lookup(req_path) !== 'application/javascript') {
-            return next();
+            return notFound();
         }
 
         // check cache
@@ -79,7 +80,7 @@ module.exports = function enchilada(opt) {
 
         // check for malicious attempts to access outside of pubdir
         if (local_file.indexOf(pubdir) !== 0) {
-            return next();
+            return notFound();
         }
 
         debug('bundling %s', local_file);
@@ -87,7 +88,7 @@ module.exports = function enchilada(opt) {
         // lookup in filesystem
         fs.exists(local_file, function(exists) {
             if (!exists) {
-                return next();
+                return notFound();
             }
 
             var bundle = makeBundle(local_file);
@@ -137,14 +138,40 @@ module.exports = function enchilada(opt) {
             });
         }
 
+        function notFound() {
+            if (typeof next === 'function') {
+                return next();
+            }
+
+            res.setHeader('Content-Type', 'text/plain');
+            respond(404, 'Not Found');
+        }
+
         function sendResponse(err, src) {
             if (err) {
+                return sendError(err);
+            }
+
+            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('ETag', crypto.createHash('md5').update(src).digest('hex').slice(0, 6));
+            res.setHeader('Vary', 'Accept-Encoding');
+            respond(200, src);
+        }
+
+        function sendError(err) {
+            if (typeof next === 'function') {
                 return next(err);
             }
-            res.contentType('application/javascript');
-            res.header('ETag', crypto.createHash('md5').update(src).digest('hex').slice(0, 6));
-            res.header('Vary', 'Accept-Encoding');
-            res.send(src);
+
+            res.setHeader('Content-Type', 'text/plain');
+            respond(500, err.toString());
+        }
+
+        function respond(code, data) {
+            data = new Buffer(data);
+            res.setHeader('Content-Length', data.length);
+            res.writeHeader(code);
+            res.end(data);
         }
 
         function watchFiles(bundle, dependencies, path) {
