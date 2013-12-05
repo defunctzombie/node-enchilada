@@ -1,3 +1,6 @@
+0.6.0
+	* Support for regular connect and regular http servers
+
 0.5.1
 	* update browserify to 2.36.0
 
