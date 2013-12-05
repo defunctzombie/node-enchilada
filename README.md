@@ -2,6 +2,8 @@
 
 serve up your javascript files all wrapped up using [browserify](https://github.com/substack/node-browserify). Yum!
 
+## with express/connect
+
 ```javascript
 var app = express();
 
@@ -14,7 +16,7 @@ app.use(express.static(__dirname + '/public'));
 
 Now just visit any ```.js``` url which maps to a path under /public and the packaged file will be served.
 
-## with ingredients
+## options
 
 No one likes a stale enchilada. Out in the real world, you want to leverage browser caching for rarely changing files. Imagine that your project uses files like jquery or [engine.io](https://github.com/LearnBoost/engine.io-client), these files don't change as much as your app code. It would be silly to keep sending them with every js file you serve up. Enchilada makes this easy to do.
 

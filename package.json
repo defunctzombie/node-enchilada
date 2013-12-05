@@ -1,7 +1,7 @@
 {
   "name": "enchilada",
   "version": "0.5.1",
-  "description": "express/connect middleware for javascript bundles",
+  "description": "middleware for automatic javascript bundles",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*.js"
@@ -11,9 +11,12 @@
     "url": "git://github.com/shtylman/node-enchilada.git"
   },
   "keywords": [
+    "browserify",
     "express",
     "script",
-    "bundle"
+    "bundle",
+    "compile",
+    "minify"
   ],
   "author": "Roman Shtylman <shtylman@gmail.com>",
   "license": "MIT",
