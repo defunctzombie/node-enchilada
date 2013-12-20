@@ -178,11 +178,11 @@ module.exports = function enchilada(opt) {
             var watchers = Object.keys(dependencies).map(function(filename) {
                 return watcher(filename, function() {
                     delete cache[path];
-                    generate(bundle, function(error) {
-                        watchCallback && watchCallback(error, path);
-                    });
                     watchers.forEach(function(watcher) {
                         watcher.close();
+                    });
+                    generate(bundle, function(error) {
+                        watchCallback && watchCallback(error, path);
                     });
                 });
             });
