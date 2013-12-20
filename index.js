@@ -2,6 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var url = require('url');
 var crypto = require('crypto');
+var convert = require('convert-source-map');
 
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
@@ -22,7 +23,8 @@ module.exports = function enchilada(opt) {
     var bundles = {};
 
     var compress = false || opt.compress;
-    var cache = {};
+    var cache = {}; // cache of sourcefiles
+    var maps = {}; // cache of sourcemaps
     var debug_opt = false || opt.debug;
 
     var watch = !opt.cache;
@@ -56,6 +58,10 @@ module.exports = function enchilada(opt) {
 
     return function(req, res, next) {
         var req_path = req.path || url.parse(req.url).path;
+
+        if (/.map.json$/.test(req_path) && maps[req_path]) {
+            return res.json(maps[req_path]);
+        }
 
         // if no extension, then don't process
         // handles case of directories and other random urls
@@ -127,13 +133,46 @@ module.exports = function enchilada(opt) {
                 if (otherError) {
                     return callback(otherError);
                 }
+
+                var srcmap = undefined;
+                var map_path = undefined;
+                if (debug_opt) {
+                    // output sourcemap
+                    srcmap = convert.fromComment(src);
+                    src = convert.removeComments(src);
+                    srcmap.setProperty('file', req_path);
+                    map_path = req_path.replace(/.js$/, '.map.json');
+                }
+
                 if (compress) {
-                    var result = uglifyjs.minify(src, {
+                    var ugly_opt = {
                         fromString: true
-                    });
+                    };
+
+                    if (srcmap) {
+                        ugly_opt.inSourceMap = srcmap.toObject(),
+                        ugly_opt.outSourceMap = req_path
+                    }
+
+                    var result = uglifyjs.minify(src, ugly_opt);
 
                     src = result.code;
+
+                    if (srcmap) {
+                        // prepare new sourcemap
+                        // we need to get the sources from bundled sources
+                        // uglify does not carry those through
+                        var srcs = srcmap.getProperty('sourcesContent');
+                        srcmap = convert.fromJSON(result.map);
+                        srcmap.setProperty('sourcesContent', srcs);
+                    }
                 }
+
+                if (srcmap) {
+                    src += '//# sourceMappingURL=' + map_path;
+                    maps[map_path] = srcmap.toObject();
+                }
+
                 cache[req_path] = src;
 
                 callback(null, src);
