@@ -49,7 +49,7 @@ test('transform called', function(done) {
 
         var src = res.text;
         vm.runInNewContext(src, sandbox);
-        assert.ok(transformed);
+        assert.ok(transformed, 'transform was not called');
         done();
     });
 });

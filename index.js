@@ -31,7 +31,9 @@ module.exports = function enchilada(opt) {
     function makeBundle(options) {
         var bundle = browserify(options);
         if (opt.transforms) {
-            opt.transforms.forEach(bundle.transform.bind(bundle));
+            opt.transforms.forEach(function(transform) {
+                bundle.transform(transform)
+            });
         }
         if (opt.externals) {
             opt.externals.forEach(function(external) {
