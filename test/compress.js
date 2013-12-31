@@ -9,6 +9,8 @@ var enchilada = require('../');
 
 var app = express();
 
+suite('compress');
+
 test('setup', function(done) {
     app.use(enchilada({
         src: __dirname + '/assets',

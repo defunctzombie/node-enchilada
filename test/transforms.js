@@ -8,6 +8,8 @@ var through = require('through');
 
 var enchilada = require('../');
 
+suite('transforms');
+
 var app = express();
 var transformed = false;
 

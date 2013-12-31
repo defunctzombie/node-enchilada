@@ -7,6 +7,8 @@ var http = require('http');
 
 var enchilada = require('../');
 
+suite('server');
+
 var server;
 
 test('setup normal http server', function(done) {

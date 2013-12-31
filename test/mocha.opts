@@ -1,2 +1,2 @@
---ui tdd
+--ui qunit
 --reporter list
