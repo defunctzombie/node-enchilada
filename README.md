@@ -16,6 +16,10 @@ app.use(express.static(__dirname + '/public'));
 
 Now just visit any ```.js``` url which maps to a path under /public and the packaged file will be served.
 
+## sourcemaps
+
+Versions 0.7+ of enchilada do not bundle sourcemaps with your javascript files; instead sourceMapURL comment is used. This allows for specifying both the `compress` and `debug` options as true in production without impacting users but still benefiting from being able to obtain sourcemaps. Care should be taken to limit access to the mapfiles (served via the /path/to/original/js/script.map.json) usually with middleware before enchilada.
+
 ## options
 
 No one likes a stale enchilada. Out in the real world, you want to leverage browser caching for rarely changing files. Imagine that your project uses files like jquery or [engine.io](https://github.com/LearnBoost/engine.io-client), these files don't change as much as your app code. It would be silly to keep sending them with every js file you serve up. Enchilada makes this easy to do.
