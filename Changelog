@@ -1,4 +1,6 @@
-0.7.0 - unreleased
+unreleased
+
+0.7.0 - 2014/1/3
 	* Strip sourcemaps from js files and server under separate map url
 	* update browserify to 3.x line 3.18.0
 
