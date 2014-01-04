@@ -35,7 +35,7 @@ test('basic', function(done) {
         };
 
         var src = res.text;
-        assert(src.match(/.*\/\/# sourceMappingURL=\/foo.map.json$/));
+        assert(src.match(/.*\/\/# sourceMappingURL=foo.map.json$/));
 
         vm.runInNewContext(src, sandbox);
         done();
@@ -85,7 +85,7 @@ test('basic', function(done) {
         };
 
         var src = res.text;
-        assert(src.match(/.*\/\/# sourceMappingURL=\/foo.map.json$/));
+        assert(src.match(/.*\/\/# sourceMappingURL=foo.map.json$/));
 
         vm.runInNewContext(src, sandbox);
         done();

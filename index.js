@@ -169,7 +169,7 @@ module.exports = function enchilada(opt) {
                 }
 
                 if (srcmap) {
-                    src += '//# sourceMappingURL=' + map_path;
+                    src += '//# sourceMappingURL=' + path.basename(map_path);
                     maps[map_path] = srcmap.toObject();
                 }
 
