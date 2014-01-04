@@ -1,3 +1,6 @@
+0.7.0 - unreleased
+	* Strip sourcemaps from js files and server under separate map url
+
 0.6.0
 	* Support for regular connect and regular http servers
 
