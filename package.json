@@ -23,7 +23,7 @@
   "dependencies": {
     "mime": "1.2.11",
     "browserify": "3.18.0",
-    "uglify-js": "2.4.6",
+    "uglify-js": "2.4.8",
     "debug": "0.7.4",
     "convert-source-map": "0.3.3"
   },
