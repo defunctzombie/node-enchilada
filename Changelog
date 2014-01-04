@@ -1,4 +1,5 @@
 unreleased
+	* sourceMappingUrl is relative file path
 
 0.7.0 - 2014/1/3
 	* Strip sourcemaps from js files and server under separate map url
