@@ -11,6 +11,10 @@ var debug = require('debug')('enchilada');
 
 var watcher = require('./watcher')
 
+uglifyjs.AST_Node.warn_function = function(msg) {
+    debug('warn: %s', msg);
+};
+
 module.exports = function enchilada(opt) {
 
     // if just a path is passed in, treat as public file dir
