@@ -220,6 +220,16 @@ module.exports = function enchilada(opt) {
         }
 
         function watchFiles(bundle, dependencies, path) {
+            // close any current watchers to avoid double watching
+            // this happens when we are already bundling (not yet done)
+            // and a file change (or request) triggers a new build
+            // leading to generate being called again (which will add watchers)
+            // but our first build will also add watchers since nothing will stop it
+            // here we remove any watchers first
+            watchers && watchers.forEach(function(watcher) {
+                watcher.close();
+            });
+
             var watchers = Object.keys(dependencies).map(function(filename) {
                 return watcher(filename, function() {
                     delete cache[path];

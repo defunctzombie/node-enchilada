@@ -11,7 +11,6 @@ module.exports = function onChange(filename, callback) {
 
     // First listener on filename
     if (!listeners[filename]) {
-
         listeners[filename] = function(curr, prev) {
             if (!curr || !prev || curr.mtime !== prev.mtime) {
                 emitter.emit(filename, curr, prev)
