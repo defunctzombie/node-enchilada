@@ -1,6 +1,6 @@
 {
   "name": "enchilada",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "middleware for automatic javascript bundles",
   "main": "index.js",
   "scripts": {
