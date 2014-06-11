@@ -22,10 +22,10 @@
   "license": "MIT",
   "dependencies": {
     "mime": "1.2.11",
-    "browserify": "3.31.2",
-    "uglify-js": "2.4.12",
-    "debug": "0.7.4",
-    "convert-source-map": "0.3.3"
+    "browserify": "4.1.9",
+    "uglify-js": "2.4.13",
+    "debug": "1.0.1",
+    "convert-source-map": "0.3.4"
   },
   "devDependencies": {
     "through": "2.3.4",
