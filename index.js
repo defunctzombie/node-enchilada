@@ -9,7 +9,7 @@ var uglifyjs = require('uglify-js');
 var browserify = require('browserify');
 var debug = require('debug')('enchilada');
 
-var watcher = require('./watcher')
+var filewatcher = require('filewatcher');
 
 uglifyjs.AST_Node.warn_function = function(msg) {
     debug('warn: %s', msg);
@@ -226,20 +226,24 @@ module.exports = function enchilada(opt) {
             // leading to generate being called again (which will add watchers)
             // but our first build will also add watchers since nothing will stop it
             // here we remove any watchers first
-            watchers && watchers.forEach(function(watcher) {
-                watcher.close();
-            });
-
-            var watchers = Object.keys(dependencies).map(function(filename) {
-                return watcher(filename, function() {
-                    delete cache[path];
-                    watchers.forEach(function(watcher) {
-                        watcher.close();
-                    });
-                    generate(bundle, function(error) {
-                        watchCallback && watchCallback(error, path);
-                    });
+            var watcher = filewatcher();
+            watcher.once('change', function(file) {
+                debug("rebuilding %s due to change in %s", req_path, file)
+                watcher.removeAll();
+                delete cache[path];
+                safeGenerate(bundle, function(error) {
+                    if (watchCallback) {
+                        watchCallback(error, path);
+                    }
                 });
+            });
+            watcher.once('fallback', function(limit) {
+                debug('Ran out of file handles after watching %s files.', limit);
+                debug('Falling back to polling which uses more CPU.');
+                debug('Run ulimit -n 10000 to increase the limit for open files.');
+            });
+            Object.keys(dependencies).map(function(filename) {
+                watcher.add(filename);
             });
         }
     };
