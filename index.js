@@ -247,7 +247,7 @@ module.exports = function enchilada(opt) {
             // here we remove any watchers first
             var watcher = filewatcher();
             watcher.once('change', function(file) {
-                debug("rebuilding %s due to change in %s", req_path, file)
+                debug("rebuilding %s due to change in %s", req_path, file);
                 watcher.removeAll();
                 delete cache[path];
                 safeGenerate(bundle, function(error) {
