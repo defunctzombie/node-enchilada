@@ -3,6 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var crypto = require('crypto');
 var convert = require('convert-source-map');
+var EventEmitter = require('events').EventEmitter;
 
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
@@ -28,11 +29,14 @@ module.exports = function enchilada(opt) {
 
     var compress = false || opt.compress;
     var cache = {}; // cache of sourcefiles
+    var generating = {};
     var maps = {}; // cache of sourcemaps
     var debug_opt = false || opt.debug;
 
     var watch = !opt.cache;
     var watchCallback = opt.watchCallback;
+
+    var emitter = new EventEmitter;
 
     function makeBundle(options) {
         var bundle = browserify(options);
@@ -85,7 +89,7 @@ module.exports = function enchilada(opt) {
         // check for bundle
         var bundle = bundles[req_path];
         if (bundle) {
-            return generate(bundle, sendResponse);
+            return safeGenerate(bundle, sendResponse);
         }
 
         var local_file = path.normalize(path.join(pubdir, req_path));
@@ -94,8 +98,6 @@ module.exports = function enchilada(opt) {
         if (local_file.indexOf(pubdir) !== 0) {
             return notFound();
         }
-
-        debug('bundling %s', local_file);
 
         // lookup in filesystem
         fs.exists(local_file, function(exists) {
@@ -107,9 +109,26 @@ module.exports = function enchilada(opt) {
             Object.keys(bundles).forEach(function(id) {
                 bundle.external(bundles[id]);
             });
-            generate(bundle, sendResponse);
+            safeGenerate(bundle, sendResponse);
         });
 
+        // safeGenerate joins multiple simultaneous generates per req_path
+        function safeGenerate(bundle, callback) {
+            emitter.once(req_path, callback);
+            if (!generating[req_path]) {
+                generating[req_path] = true;
+                debug('bundling %s', local_file);
+                generate(bundle, function(error, src) {
+                    delete generating[req_path];
+                    if (error) {
+                        debug("error building %s from %s: %s", req_path, local_file, error)
+                    } else {
+                        debug("built %s from %s", req_path, local_file)
+                    }
+                    emitter.emit(req_path, error, src);
+                });
+            }
+        }
         function generate(bundle, callback) {
             var dependencies = {};
 
