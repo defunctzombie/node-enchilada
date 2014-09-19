@@ -1,4 +1,7 @@
-unreleased
+UNRELEASED
+
+	* fix file watching and multiple bundle build race
+	* use filewatcher module for file watching
 
 0.7.1 - 2014/1/4
 	* sourceMappingUrl is relative file path
