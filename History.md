@@ -1,4 +1,4 @@
-UNRELEASED
+# 0.10.0 (2014-09-19)
 
 	* fix file watching and multiple bundle build race
 	* use filewatcher module for file watching
