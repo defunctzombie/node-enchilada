@@ -30,7 +30,7 @@ Just add the proper ingredients and your enchilada will be served up as you requ
 app.use(enchilada({
     src: __dirname + '/public', // location of your js files
     cache: true || false, // default false (use true for production to disable file watching)
-    compress: true || false, // default false
+    compress: true || false || { uglify options }, // default false
     debug: true || false, // default false (enable sourcemap output with bundle)
     watchCallback: function(filename) {}, // optional (use to do something clever, like tell client to reload the page)
     routes: {

@@ -168,9 +168,12 @@ module.exports = function enchilada(opt) {
                 }
 
                 if (compress) {
-                    var ugly_opt = {
-                        fromString: true
-                    };
+                    var ugly_opt = {};
+                    if (typeof compress == 'object') {
+                        ugly_opt = compress
+                    }
+
+                    ugly_opt.fromString = true;
 
                     if (srcmap) {
                         ugly_opt.inSourceMap = srcmap.toObject(),
