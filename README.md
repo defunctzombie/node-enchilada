@@ -32,7 +32,7 @@ app.use(enchilada({
     cache: true || false, // default false (use true for production to disable file watching)
     compress: true || false || { uglify options }, // default false
     debug: true || false, // default false (enable sourcemap output with bundle)
-    watchCallback: function(filename) {}, // optional (use to do something clever, like tell client to reload the page)
+    watchCallback: function(err, filename) {}, // optional (use to do something clever, like tell client to reload the page)
     routes: {
         // key is the url route, value is either a file relative to src
         '/js/jquery.js': './js/jquery.js',
