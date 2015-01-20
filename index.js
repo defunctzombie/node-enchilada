@@ -220,9 +220,15 @@ module.exports = function enchilada(opt) {
             }
 
             res.setHeader('Content-Type', 'application/javascript');
-            res.setHeader('ETag', crypto.createHash('md5').update(src).digest('hex').slice(0, 6));
-            res.setHeader('Vary', 'Accept-Encoding');
-            respond(200, src);
+
+            var etag = crypto.createHash('md5').update(src).digest('hex').slice(0, 6);
+            if (etag === req.get('If-None-Match')) {
+                respond(304, '');
+            }else{
+                res.setHeader('ETag', etag);
+                res.setHeader('Vary', 'Accept-Encoding');
+                respond(200, src);
+            }
         }
 
         function sendError(err) {
