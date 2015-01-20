@@ -222,7 +222,7 @@ module.exports = function enchilada(opt) {
             res.setHeader('Content-Type', 'application/javascript');
 
             var etag = crypto.createHash('md5').update(src).digest('hex').slice(0, 6);
-            if (etag === req.get('If-None-Match')) {
+            if (req.get && (etag === req.get('If-None-Match'))) {
                 respond(304, '');
             }else{
                 res.setHeader('ETag', etag);
