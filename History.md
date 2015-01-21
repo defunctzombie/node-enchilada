@@ -1,3 +1,7 @@
+# UNRELEASED
+
+	* send 304 for If-None-Match matches ETag
+
 # 0.11.0 (2014-09-28)
 
 	* add uglify options support to `compress` option
