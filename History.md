@@ -1,4 +1,4 @@
-# UNRELEASED
+# 0.12.0 (2015-01-20)
 
 	* send 304 for If-None-Match matches ETag
 
