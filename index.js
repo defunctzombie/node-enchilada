@@ -38,7 +38,11 @@ module.exports = function enchilada(opt) {
 
     var emitter = new EventEmitter;
 
+    var browserifyCache = { cache: {}, packageCache: {}, fullPaths: true };
+
     function makeBundle(options) {
+        options.debug = debug_opt;
+        options.basedir = pubdir;
         var bundle = browserify(options);
         if (opt.transforms) {
             opt.transforms.forEach(function(transform) {
@@ -105,7 +109,7 @@ module.exports = function enchilada(opt) {
                 return notFound();
             }
 
-            var bundle = makeBundle(local_file);
+            var bundle = makeBundle({entries:[local_file]});
             Object.keys(bundles).forEach(function(id) {
                 bundle.external(bundles[id]);
             });
@@ -144,7 +148,7 @@ module.exports = function enchilada(opt) {
                 bundle.on('file', collect_deps);
             }
 
-            bundle.bundle({ debug: debug_opt }, function(err, src) {
+            bundle.bundle(function(err, src) {
                 bundle.removeListener('file', collect_deps);
 
                 if (watch) {
@@ -156,6 +160,9 @@ module.exports = function enchilada(opt) {
                 if (otherError) {
                     return callback(otherError);
                 }
+
+                // src is a Buffer
+                src = src.toString('utf8');
 
                 var srcmap = undefined;
                 var map_path = undefined;
