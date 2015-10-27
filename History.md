@@ -1,4 +1,4 @@
-# UNRELEASED
+# 0.13.0 (2015-10-27)
 
 	* update convert-source-map for stack overflow fix
 	* use ready-signal to de-duplicate same file loading
