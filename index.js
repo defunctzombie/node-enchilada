@@ -3,7 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var crypto = require('crypto');
 var convert = require('convert-source-map');
-var EventEmitter = require('events').EventEmitter;
+var Ready = require('ready-signal');
 
 var mime = require('mime');
 var uglifyjs = require('uglify-js');
@@ -35,8 +35,6 @@ module.exports = function enchilada(opt) {
 
     var watch = !opt.cache;
     var watchCallback = opt.watchCallback;
-
-    var emitter = new EventEmitter;
 
     function makeBundle(options) {
         var bundle = browserify(options);
@@ -114,20 +112,15 @@ module.exports = function enchilada(opt) {
 
         // safeGenerate joins multiple simultaneous generates per req_path
         function safeGenerate(bundle, callback) {
-            emitter.once(req_path, callback);
-            if (!generating[req_path]) {
-                generating[req_path] = true;
-                debug('bundling %s', local_file);
+            var ready = generating[req_path];
+            if (!ready) {
+                ready = generating[req_path] = Ready();
                 generate(bundle, function(error, src) {
                     delete generating[req_path];
-                    if (error) {
-                        debug("error building %s from %s: %s", req_path, local_file, error)
-                    } else {
-                        debug("built %s from %s", req_path, local_file)
-                    }
-                    emitter.emit(req_path, error, src);
+                    ready.signal(error, src);
                 });
             }
+            ready(callback);
         }
         function generate(bundle, callback) {
             var dependencies = {};
