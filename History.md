@@ -1,3 +1,8 @@
+# UNRELEASED
+
+	* update convert-source-map for stack overflow fix
+	* use ready-signal to de-duplicate same file loading
+
 # 0.12.0 (2015-01-20)
 
 	* send 304 for If-None-Match matches ETag
