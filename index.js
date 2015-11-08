@@ -43,6 +43,11 @@ module.exports = function enchilada(opt) {
                 bundle.transform(transform)
             });
         }
+        if (opt.globalTransforms) {
+            opt.globalTransforms.forEach(function(transform) {
+                bundle.transform({ global: true }, transform)
+            });
+        }
         if (opt.externals) {
             opt.externals.forEach(function(external) {
                 bundle.external(external);
