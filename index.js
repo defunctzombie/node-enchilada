@@ -66,7 +66,13 @@ module.exports = function enchilada(opt) {
         var req_path = req.path || url.parse(req.url).path;
 
         if (/.map.json$/.test(req_path) && maps[req_path]) {
-            return res.json(maps[req_path]);
+            if (typeof res.json == "function") {
+                return res.json(maps[req_path]);
+            } else {
+                var body = JSON.stringify(maps[req_path]);
+                res.setHeader('Content-Type', 'application/json');
+                return res.end(body);
+            }
         }
 
         // if no extension, then don't process
