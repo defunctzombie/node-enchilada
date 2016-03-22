@@ -32,6 +32,7 @@ module.exports = function enchilada(opt) {
     var generating = {};
     var maps = {}; // cache of sourcemaps
     var debug_opt = false || opt.debug;
+    var prefix = opt.prefix;
 
     var watch = !opt.cache;
     var watchCallback = opt.watchCallback;
@@ -64,6 +65,10 @@ module.exports = function enchilada(opt) {
 
     return function(req, res, next) {
         var req_path = req.path || url.parse(req.url).path;
+
+        if (prefix && 0 === req_path.indexOf(prefix)) {
+            req_path = req_path.substring(prefix.length);
+        }
 
         if (/.map.json$/.test(req_path) && maps[req_path]) {
             return res.json(maps[req_path]);
