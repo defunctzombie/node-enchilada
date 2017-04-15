@@ -65,3 +65,5 @@ Install with [npm](https://npmjs.org)
 ```shell
 npm install enchilada
 ```
+
+[viewcount](https://viewcount.jepso.com/count/shtylman/node-enchilada.png)
